@@ -613,7 +613,7 @@ proc ::tokencube::Reader { fd } {
 ##
 #####################################
 
-if { [info script] eq $argv0 } {
+if { [info exists argv0] && [info script] eq $argv0 } {
 	proc dump { mac type args } {
 		set units {
 			TEMPERATURE		"C"
