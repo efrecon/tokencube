@@ -255,13 +255,15 @@ proc ::tokencube::ScanAbort { fd dev ms } {
 	# Kill current scanning process
 	set kill [auto_execok ${vars::-kill}]
 	if { [catch {pid $fd} pid] == 0 } {
-		exec $kill $pid
+		if { [catch {exec -- $kill $pid} err] } {
+			puts stderr "Error when killing scanning process: $err"
+		}
 		catch {close $fd}
 	}
 	
 	# Reset BLE device
 	set config [auto_execok ${vars::-config}]
-	exec $config $dev reset
+	exec -- $config $dev reset
 	
 	# Scan again in a while
 	scanner $dev $ms
