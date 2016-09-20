@@ -263,7 +263,15 @@ proc ::tokencube::ScanAbort { fd dev ms } {
 	
 	# Reset BLE device
 	set config [auto_execok ${vars::-config}]
-	exec -- $config $dev reset
+	if { [catch {exec -- $config $dev reset} err] } {
+		if { [string match -nocase "*Connection timed out*" $err] } {
+			if { [catch {exec -- $config $dev up} err] } {
+				puts stderr "Could neither reset nor bring up $dev: $err"
+			}
+		} else {
+			puts stderr "Could not reset device $dev: $err"
+		}
+	}
 	
 	# Scan again in a while
 	scanner $dev $ms
